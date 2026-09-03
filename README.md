@@ -1,22 +1,20 @@
-# 📖 My Contact Book App
+# 📖 Smart SQL Contact Book
 
-A simple, interactive web application built with Python and Streamlit to manage your contacts easily. This project was developed to practice Python fundamentals, file handling, and web framework integration.
+A modern, interactive web application built with Python and Streamlit to manage contacts efficiently. This project uses a local SQLite database for robust data management, showcasing foundational backend logic and a clean frontend UI.
 
-## ✨ Features
-* **Add Contacts:** Save new contacts with their Name, Phone Number, and Email (automatically prevents duplicate names).
-* **View All:** See a complete list of all saved contacts in a clean, user-friendly interface.
-* **Search:** Quickly find a specific contact's details by searching their name.
-* **Delete:** Remove contacts you no longer need.
-* **Data Persistence:** All contacts are automatically saved to a local `contacts.json` file, ensuring your data is never lost when the app closes.
+**✨ Features**
+* **Database Integration:** Utilizes SQLite to store and manage contacts permanently without data loss.
+* **CRUD Operations:** Seamlessly Add, View, Search, and Delete contacts using SQL queries.
+* **Modern UI:** Features a customized Streamlit interface with expanders, structured columns, and intuitive alerts.
+* **Data Validation:** Automatically prevents duplicate entries using database-level unique constraints.
 
-## 🛠️ Tech Stack
+**🛠️ Tech Stack**
 * **Language:** Python
-* **Web Framework:** Streamlit
-* **Database/Storage:** JSON (Built-in Python module)
+* **Frontend:** Streamlit
+* **Database:** SQLite3
 
-## 🚀 How to Run the Project locally
+**🚀 How to Run Locally**
 
-### 1. Prerequisites
-Make sure you have Python installed on your system. You will also need to install the Streamlit library. Open your terminal and run:
+1. Install the required web framework:
 ```bash
 pip install streamlit
