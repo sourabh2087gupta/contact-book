@@ -5,197 +5,321 @@ import database as db
 import utils
 
 # ==========================================
-# PAGE CONFIGURATION
+# PAGE CONFIGURATION (Must be first)
 # ==========================================
-st.set_page_config(page_title="Smart Contact Manager", page_icon="👥", layout="wide")
+st.set_page_config(page_title="Smart Contact Manager", page_icon="✨", layout="wide", initial_sidebar_state="expanded")
 
-# Initialize Database dynamically
-db.init_db()
-
+# Load Custom CSS
 # ==========================================
-# CUSTOM CSS FOR MODERN UI
+# CUSTOM CSS (Direct Injection)
 # ==========================================
 st.markdown("""
-    <style>
-    .metric-card {
-        background-color: #f0f2f6;
-        border-radius: 10px;
-        padding: 15px;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+<style>
+    /* Hide default Streamlit elements */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+
+    /* Premium Metric Cards */
+    .metric-container {
+        background: rgba(30, 30, 36, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
         text-align: center;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .metric-value { font-size: 2rem; font-weight: bold; color: #1f77b4; }
-    .metric-label { font-size: 1rem; color: #555; }
+    .metric-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 242, 254, 0.15);
+        border: 1px solid rgba(0, 242, 254, 0.3);
+    }
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 5px;
+    }
+
+    /* Contact Cards */
     .contact-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 10px;
-        background-color: white;
+        background: #1e1e24; /* Fallback color */
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
-    html[data-theme="dark"] .metric-card { background-color: #262730; }
-    html[data-theme="dark"] .metric-label { color: #ccc; }
-    html[data-theme="dark"] .contact-card { background-color: #1e1e1e; border-color: #333; }
-    </style>
+    .contact-card:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 242, 254, 0.4);
+        transform: translateY(-3px);
+    }
+    .avatar-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .contact-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+        color: #e0e0e0;
+    }
+    .contact-cat {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+        background: rgba(0, 242, 254, 0.1);
+        color: #4facfe;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    
+    /* Button Styling */
+    div.stButton > button {
+        border-radius: 8px !important;
+        transition: all 0.3s !important;
+    }
+    div.stButton > button:hover {
+        border-color: #00f2fe !important;
+        color: #00f2fe !important;
+    }
+</style>
 """, unsafe_allow_html=True)
+
+# Initialize DB
+db.init_db()
+df_contacts = db.get_all_contacts()
 
 # ==========================================
 # SIDEBAR NAVIGATION
 # ==========================================
-st.sidebar.title("👥 Smart Contacts")
-st.sidebar.markdown("MCA Project by Sourabh Gupta")
-menu = st.sidebar.radio("Navigation", [
-    "🏠 Dashboard", 
-    "➕ Add Contact", 
-    "👥 All Contacts", 
-    "⭐ Favorites", 
-    "🔍 Search & Assistant", 
-    "📊 Analytics", 
-    "⚙️ Settings"
-])
-
-# Load data globally for use across tabs
-df_contacts = db.get_all_contacts()
+with st.sidebar:
+    st.markdown("### ✨ Smart Network")
+    st.markdown("<p style='color: #888; font-size: 0.85rem;'>MCA Project • Sourabh Gupta</p>", unsafe_allow_html=True)
+    st.write("---")
+    
+    menu = st.radio("Navigation", [
+        "⌂ Dashboard", 
+        "👥 All Contacts", 
+        "➕ Add Contact", 
+        "⭐ Favorites", 
+        "🔎 Smart Search", 
+        "📊 Analytics"
+    ], label_visibility="collapsed")
+    
+    st.write("---")
+    st.markdown("🟢 **System Status:** Online")
+    st.markdown(f"📦 **Database:** {len(df_contacts)} records")
 
 # ==========================================
 # 1. DASHBOARD
 # ==========================================
-if menu == "🏠 Dashboard":
-    st.title("Welcome to Smart Contact Manager")
-    st.markdown("Organize, search, and manage your contacts efficiently.")
+if menu == "⌂ Dashboard":
+    st.markdown("<h1>Good morning, Sourabh 👋</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #a0a0a0; font-size: 1.1rem;'>Organize your connections. Find anyone instantly.</p>", unsafe_allow_html=True)
+    st.write("") # spacing
     
-    if not df_contacts.empty:
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.markdown(f'<div class="metric-card"><div class="metric-value">{len(df_contacts)}</div><div class="metric-label">Total Contacts</div></div>', unsafe_allow_html=True)
-        with col2:
-            st.markdown(f'<div class="metric-card"><div class="metric-value">{len(df_contacts[df_contacts["is_favorite"] == 1])}</div><div class="metric-label">Favorites ⭐</div></div>', unsafe_allow_html=True)
-        with col3:
-            st.markdown(f'<div class="metric-card"><div class="metric-value">{df_contacts["category"].nunique()}</div><div class="metric-label">Categories</div></div>', unsafe_allow_html=True)
-        with col4:
-            recent_count = min(5, len(df_contacts))
-            st.markdown(f'<div class="metric-card"><div class="metric-value">{recent_count}</div><div class="metric-label">Recently Added</div></div>', unsafe_allow_html=True)
-        
-        st.write("---")
-        st.subheader("Recent Contacts")
-        st.dataframe(df_contacts.tail(5)[['name', 'phone', 'email', 'category']], use_container_width=True, hide_index=True)
-    else:
-        st.info("Your contact book is empty. Go to 'Add Contact' to get started!")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.markdown(f'''
+        <div class="metric-container">
+            <div class="metric-value">{len(df_contacts)}</div>
+            <div class="metric-label">Total Contacts</div>
+        </div>
+        ''', unsafe_allow_html=True)
+    with col2:
+        fav_count = len(df_contacts[df_contacts["is_favorite"] == 1]) if not df_contacts.empty else 0
+        st.markdown(f'''
+        <div class="metric-container">
+            <div class="metric-value">{fav_count}</div>
+            <div class="metric-label">Favorites ⭐</div>
+        </div>
+        ''', unsafe_allow_html=True)
+    with col3:
+        cat_count = df_contacts["category"].nunique() if not df_contacts.empty else 0
+        st.markdown(f'''
+        <div class="metric-container">
+            <div class="metric-value">{cat_count}</div>
+            <div class="metric-label">Categories</div>
+        </div>
+        ''', unsafe_allow_html=True)
+    with col4:
+        st.markdown(f'''
+        <div class="metric-container">
+            <div class="metric-value">✨</div>
+            <div class="metric-label">Smart Active</div>
+        </div>
+        ''', unsafe_allow_html=True)
+
+    st.write("---")
+    if df_contacts.empty:
+        st.info("👥 No contacts yet. Start building your smart network!")
+        if st.button("➕ Add Your First Contact", type="primary"):
+            st.toast("Navigate to 'Add Contact' in the sidebar!")
 
 # ==========================================
-# 2. ADD CONTACT
-# ==========================================
-elif menu == "➕ Add Contact":
-    st.title("➕ Add New Contact")
-    
-    with st.form("add_contact_form", clear_on_submit=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            name = st.text_input("Full Name *")
-            phone = st.text_input("Phone Number *")
-            email = st.text_input("Email Address")
-        with col2:
-            category = st.selectbox("Category", ["General", "Work", "Family", "Friends", "Education", "Organization"])
-            address = st.text_input("Location / Address")
-            is_fav = st.checkbox("Mark as Favorite ⭐")
-            
-        notes = st.text_area("Notes")
-        submit = st.form_submit_button("💾 Save Contact", type="primary")
-        
-        if submit:
-            if not name or not phone:
-                st.error("Name and Phone Number are required!")
-            elif not utils.validate_phone(phone):
-                st.error("Invalid phone number format.")
-            elif email and not utils.validate_email(email):
-                st.error("Invalid email format.")
-            elif phone in df_contacts['phone'].values:
-                st.warning("A contact with this phone number already exists!")
-            else:
-                db.add_contact(name, phone, email, address, category, notes, is_fav)
-                st.success(f"Contact '{name}' added successfully!")
-                st.rerun()
-
-# ==========================================
-# 3. ALL CONTACTS & PROFILE
+# 2. ALL CONTACTS (BEAUTIFUL GRID)
 # ==========================================
 elif menu == "👥 All Contacts":
-    st.title("👥 All Contacts")
+    st.header("👥 Your Network")
     
     if df_contacts.empty:
-        st.info("No contacts found.")
+        st.warning("Your contact book is empty.")
     else:
-        # Action selection
-        contact_names = df_contacts['name'].tolist()
-        selected_name = st.selectbox("Select a contact to view/edit profile:", ["-- Select Contact --"] + contact_names)
-        
-        if selected_name != "-- Select Contact --":
-            contact_data = df_contacts[df_contacts['name'] == selected_name].iloc[0]
+        # Create a responsive 3-column grid
+        cols = st.columns(3)
+        for index, row in df_contacts.iterrows():
+            col = cols[index % 3] # Distribute cards across columns
             
-            st.markdown("---")
-            col_prof1, col_prof2 = st.columns([2, 1])
-            
-            with col_prof1:
-                st.subheader(f"👤 {contact_data['name']} {'⭐' if contact_data['is_favorite'] else ''}")
-                st.markdown(f"**📞 Phone:** {contact_data['phone']}")
-                st.markdown(f"**📧 Email:** {contact_data['email'] if contact_data['email'] else 'N/A'}")
-                st.markdown(f"**📍 Address:** {contact_data['address'] if contact_data['address'] else 'N/A'}")
-                st.markdown(f"**🏷️ Category:** {contact_data['category']}")
-                st.markdown(f"**📝 Notes:** {contact_data['notes'] if contact_data['notes'] else 'None'}")
+            with col:
+                initials = utils.get_initials(row['name'])
+                fav_icon = "⭐" if row['is_favorite'] else ""
                 
-            with col_prof2:
-                # Actions
-                if st.button("Toggle Favorite ⭐", use_container_width=True):
-                    db.toggle_favorite(int(contact_data['id']), int(contact_data['is_favorite']))
-                    st.rerun()
+                # HTML Card
+                st.markdown(f'''
+                <div class="contact-card">
+                    <div class="avatar-row">
+                        <div class="avatar">{initials}</div>
+                        <div>
+                            <p class="contact-name">{row['name']} {fav_icon}</p>
+                            <span class="contact-cat">{row['category']}</span>
+                        </div>
+                    </div>
+                    <div class="contact-detail">📞 {row['phone']}</div>
+                    <div class="contact-detail">✉️ {row['email'] if row['email'] else 'N/A'}</div>
+                </div>
+                ''', unsafe_allow_html=True)
                 
-                with st.expander("✏️ Edit Contact"):
-                    with st.form(f"edit_{contact_data['id']}"):
-                        e_name = st.text_input("Name", contact_data['name'])
-                        e_phone = st.text_input("Phone", contact_data['phone'])
-                        e_email = st.text_input("Email", contact_data['email'])
-                        e_address = st.text_input("Address", contact_data['address'])
-                        cats = ["General", "Work", "Family", "Friends", "Education", "Organization"]
-                        e_cat = st.selectbox("Category", cats, index=cats.index(contact_data['category']) if contact_data['category'] in cats else 0)
-                        e_notes = st.text_area("Notes", contact_data['notes'])
-                        if st.form_submit_button("Update"):
-                            db.update_contact(int(contact_data['id']), e_name, e_phone, e_email, e_address, e_cat, e_notes, int(contact_data['is_favorite']))
-                            st.success("Updated successfully!")
+                # Action Buttons inside Streamlit (placed right below the HTML card)
+                b1, b2, b3 = st.columns([1,1,1])
+                with b1:
+                    if st.button("⭐", key=f"fav_{row['id']}", help="Toggle Favorite"):
+                        db.toggle_favorite(row['id'], row['is_favorite'])
+                        st.rerun()
+                with b2:
+                    with st.popover("✏️"):
+                        st.markdown("**Edit Contact**")
+                        e_name = st.text_input("Name", row['name'], key=f"en_{row['id']}")
+                        e_phone = st.text_input("Phone", row['phone'], key=f"ep_{row['id']}")
+                        if st.button("Save", key=f"es_{row['id']}", type="primary"):
+                            db.update_contact(row['id'], e_name, e_phone, row['email'], row['address'], row['category'], row['notes'], row['is_favorite'])
+                            st.toast(f"✅ {e_name} updated successfully!")
                             st.rerun()
-                
-                if st.button("🗑️ Delete Contact", type="primary", use_container_width=True):
-                    db.delete_contact(int(contact_data['id']))
-                    st.success("Contact deleted.")
-                    st.rerun()
+                with b3:
+                    if st.button("🗑️", key=f"del_{row['id']}", help="Delete"):
+                        db.delete_contact(row['id'])
+                        st.toast(f"🗑️ Contact deleted.")
+                        st.rerun()
 
-        st.write("---")
-        st.dataframe(df_contacts[['name', 'phone', 'email', 'category']], use_container_width=True, hide_index=True)
+# ==========================================
+# 3. ADD CONTACT (PREMIUM FORM)
+# ==========================================
+elif menu == "➕ Add Contact":
+    st.header("Create New Contact")
+    st.markdown("<p style='color: #888;'>Add someone to your personal network.</p>", unsafe_allow_html=True)
+    
+    with st.container():
+        with st.form("add_contact_form", clear_on_submit=True):
+            col1, col2 = st.columns(2)
+            with col1:
+                name = st.text_input("Full Name *", placeholder="e.g. John Doe")
+                phone = st.text_input("Phone Number *", placeholder="+91 9876543210")
+                email = st.text_input("Email Address", placeholder="john@example.com")
+            with col2:
+                notes = st.text_area("Notes", placeholder="Met at the college hackathon...", height=115)
+                address = st.text_input("Location / Address", placeholder="Delhi, India")
+            
+            st.write("")
+            c1, c2 = st.columns(2)
+            with c1:
+                # Smart Suggestion Trigger
+                suggested_cat = "General"
+                cats = ["General", "Work", "Family", "Friends", "Education", "Organization"]
+                category = st.selectbox("Category", cats)
+            with c2:
+                st.write("")
+                st.write("")
+                is_fav = st.checkbox("⭐ Add to Favorites")
+                
+            st.write("---")
+            submit = st.form_submit_button("✨ Create Contact", type="primary", use_container_width=True)
+            
+            if submit:
+                if not name or not phone:
+                    st.error("Name and Phone Number are required!")
+                elif not utils.validate_phone(phone):
+                    st.error("Invalid phone number format.")
+                elif phone in df_contacts['phone'].values:
+                    st.error("A contact with this phone number already exists!")
+                else:
+                    # Apply Smart Category if user left it as General but notes imply otherwise
+                    final_cat = category
+                    if category == "General" and (email or notes):
+                        final_cat = utils.smart_categorize(email, notes)
+                        
+                    db.add_contact(name, phone, email, address, final_cat, notes, is_fav)
+                    st.toast(f"✅ {name} added to {final_cat} successfully!")
+                    st.rerun()
 
 # ==========================================
 # 4. FAVORITES
 # ==========================================
 elif menu == "⭐ Favorites":
-    st.title("⭐ Favorite Contacts")
+    st.header("⭐ Favorite Connections")
     fav_df = df_contacts[df_contacts['is_favorite'] == 1]
     
     if fav_df.empty:
-        st.info("You haven't marked any contacts as favorites yet.")
+        st.info("⭐ No favorite contacts yet. Mark contacts as favorites to access them quickly here.")
     else:
-        for _, row in fav_df.iterrows():
-            st.markdown(f"""
-            <div class="contact-card">
-                <h4>{row['name']} ⭐</h4>
-                <p>📞 {row['phone']} &nbsp;&nbsp; | &nbsp;&nbsp; 📧 {row['email']}</p>
-            </div>
-            """, unsafe_allow_html=True)
+        cols = st.columns(3)
+        for index, row in fav_df.iterrows():
+            with cols[index % 3]:
+                st.markdown(f'''
+                <div class="contact-card" style="border-color: rgba(255, 215, 0, 0.3);">
+                    <div class="avatar-row">
+                        <div class="avatar" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">{utils.get_initials(row['name'])}</div>
+                        <div>
+                            <p class="contact-name">{row['name']}</p>
+                            <span class="contact-cat">{row['category']}</span>
+                        </div>
+                    </div>
+                    <div class="contact-detail">📞 {row['phone']}</div>
+                </div>
+                ''', unsafe_allow_html=True)
+                if st.button("Remove ⭐", key=f"rem_{row['id']}", use_container_width=True):
+                    db.toggle_favorite(row['id'], 1)
+                    st.rerun()
 
 # ==========================================
-# 5. SEARCH & SMART ASSISTANT
+# 5. SMART SEARCH & INSIGHTS
 # ==========================================
-elif menu == "🔍 Search & Assistant":
-    st.title("🔍 Search & Smart Assistant")
+elif menu == "🔎 Smart Search":
+    st.header("🔎 Search & Insights")
     
-    search_query = st.text_input("Search by Name, Phone, or Email...", "")
+    search_query = st.text_input("Search contacts by name, email or phone...", placeholder="Type to search...", label_visibility="collapsed")
     
     if search_query:
         mask = (df_contacts['name'].str.contains(search_query, case=False, na=False)) | \
@@ -203,72 +327,44 @@ elif menu == "🔍 Search & Assistant":
                (df_contacts['email'].str.contains(search_query, case=False, na=False))
         results = df_contacts[mask]
         
-        if results.empty:
-            st.warning("No contacts found matching your search.")
-        else:
-            st.success(f"Found {len(results)} matches:")
-            st.dataframe(results[['name', 'phone', 'email', 'category']], use_container_width=True, hide_index=True)
-            
-    st.write("---")
-    st.subheader("🤖 Smart Assistant")
-    st.info("The AI Assistant analyzes your data to find anomalies and suggest improvements.")
+        st.markdown(f"**{len(results)} contacts found**")
+        st.dataframe(results[['name', 'phone', 'email', 'category']], use_container_width=True, hide_index=True)
     
-    if st.button("Analyze Database"):
-        duplicates = utils.detect_duplicates(df_contacts)
-        if duplicates:
-            st.error("⚠️ Data Issues Found:")
-            for dup in duplicates:
-                st.write(f"- {dup}")
-        else:
-            st.success("✅ Your contact list is clean! No duplicate phones or emails detected.")
+    st.write("---")
+    st.subheader("🤖 Smart Contact Insights")
+    st.markdown("AI-driven duplicate detection to keep your network clean.")
+    
+    if st.button("Run Network Scan", type="primary"):
+        with st.spinner("Scanning database..."):
+            duplicates = utils.detect_duplicates(df_contacts)
+            if duplicates:
+                for dup in duplicates:
+                    st.error(dup)
+            else:
+                st.success("✅ Your network is perfectly clean! No duplicates found.")
 
 # ==========================================
 # 6. ANALYTICS
 # ==========================================
 elif menu == "📊 Analytics":
-    st.title("📊 Contact Analytics")
+    st.header("📊 Network Analytics")
     
     if df_contacts.empty:
-        st.warning("Not enough data to display analytics.")
+        st.warning("Not enough data to generate analytics.")
     else:
-        col1, col2 = st.columns(2)
-        with col1:
-            # Pie Chart: Categories
+        c1, c2 = st.columns(2)
+        with c1:
             cat_counts = df_contacts['category'].value_counts().reset_index()
             cat_counts.columns = ['Category', 'Count']
-            fig_cat = px.pie(cat_counts, names='Category', values='Count', title="Contacts by Category", hole=0.4)
-            st.plotly_chart(fig_cat, use_container_width=True)
+            fig1 = px.pie(cat_counts, names='Category', values='Count', hole=0.5, 
+                          color_discrete_sequence=px.colors.sequential.Teal)
+            fig1.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", font_color="white")
+            st.plotly_chart(fig1, use_container_width=True)
             
-        with col2:
-            # Bar Chart: Favorites vs Regular
-            fav_counts = df_contacts['is_favorite'].value_counts().reset_index()
-            fav_counts['is_favorite'] = fav_counts['is_favorite'].map({0: 'Regular', 1: 'Favorite'})
-            fav_counts.columns = ['Status', 'Count']
-            fig_fav = px.bar(fav_counts, x='Status', y='Count', title="Favorites Breakdown", color='Status')
-            st.plotly_chart(fig_fav, use_container_width=True)
-
-# ==========================================
-# 7. SETTINGS
-# ==========================================
-elif menu == "⚙️ Settings":
-    st.title("⚙️ Settings & Data Management")
-    
-    st.subheader("Export Data")
-    if not df_contacts.empty:
-        csv = df_contacts.to_csv(index=False)
-        st.download_button("📥 Download Contacts as CSV", data=csv, file_name="contacts_backup.csv", mime="text/csv")
-    else:
-        st.info("No data available to export.")
-        
-    st.write("---")
-    st.subheader("Danger Zone")
-    with st.expander("🗑️ Reset Database"):
-        st.warning("This will permanently delete all your contacts. This action cannot be undone.")
-        confirm = st.text_input("Type 'DELETE' to confirm:")
-        if st.button("Clear All Data", type="primary"):
-            if confirm == "DELETE":
-                db.clear_all_contacts()
-                st.success("Database has been reset successfully.")
-                st.rerun()
-            else:
-                st.error("Confirmation text did not match.")
+        with c2:
+            st.write("")
+            st.write("")
+            st.markdown("### Export Data")
+            st.markdown("Download your entire network securely as a CSV file.")
+            csv = df_contacts.to_csv(index=False)
+            st.download_button("📥 Download Backup (.csv)", data=csv, file_name="smart_contacts_backup.csv", mime="text/csv", type="primary")
