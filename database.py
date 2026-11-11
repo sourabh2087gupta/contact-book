@@ -1,92 +1,84 @@
 import sqlite3
-import pandas as pd
-from datetime import datetime
 
-DB_NAME = 'contacts.db'
-
-def get_connection():
-    return sqlite3.connect(DB_NAME, check_same_thread=False)
+DB_FILE = "contacts.db"
 
 def init_db():
-    conn = get_connection()
-    c = conn.cursor()
-    # Create base table if it doesn't exist (legacy support)
-    c.execute('''
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS contacts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            phone TEXT NOT NULL,
-            email TEXT
+            name TEXT UNIQUE,
+            phone TEXT,
+            email TEXT,
+            category TEXT DEFAULT 'General'
         )
     ''')
-    conn.commit()
-
-    # Safely migrate existing database by adding new columns if they are missing
-    columns_to_add = {
-        "address": "TEXT DEFAULT ''",
-        "category": "TEXT DEFAULT 'General'",
-        "notes": "TEXT DEFAULT ''",
-        "is_favorite": "INTEGER DEFAULT 0",
-        "created_at": "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
-    }
-
-    c.execute("PRAGMA table_info(contacts)")
-    existing_columns = [col[1] for col in c.fetchall()]
-
-    for col_name, col_def in columns_to_add.items():
-        if col_name not in existing_columns:
-            try:
-                c.execute(f"ALTER TABLE contacts ADD COLUMN {col_name} {col_def}")
-            except Exception as e:
-                pass # Column already exists
+    # Agar purani table mein category column nahi hai toh automatically add kar dega
+    try:
+        cursor.execute("ALTER TABLE contacts ADD COLUMN category TEXT DEFAULT 'General'")
+    except sqlite3.OperationalError:
+        pass
     conn.commit()
     conn.close()
 
-def add_contact(name, phone, email, address, category, notes, is_favorite):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute('''
-        INSERT INTO contacts (name, phone, email, address, category, notes, is_favorite)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (name, phone, email, address, category, notes, int(is_favorite)))
+def add_db_contact(name, phone, email, category="General"):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "INSERT INTO contacts (name, phone, email, category) VALUES (?, ?, ?, ?)",
+            (name, phone, email, category)
+        )
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+    finally:
+        conn.close()
+
+def get_all_contacts(category_filter="All"):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    if category_filter == "All":
+        cursor.execute("SELECT name, phone, email, category FROM contacts ORDER BY name ASC")
+    else:
+        cursor.execute(
+            "SELECT name, phone, email, category FROM contacts WHERE category = ? ORDER BY name ASC",
+            (category_filter,)
+        )
+    data = cursor.fetchall()
+    conn.close()
+    return data
+
+def search_db_contact(query):
+    """Partial search using SQL LIKE."""
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT name, phone, email, category FROM contacts WHERE name LIKE ? OR phone LIKE ?",
+        (f"%{query}%", f"%{query}%")
+    )
+    data = cursor.fetchall()
+    conn.close()
+    return data
+
+def update_db_contact(name, new_phone, new_email, new_category):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE contacts SET phone = ?, email = ?, category = ? WHERE name = ?",
+        (new_phone, new_email, new_category, name)
+    )
+    updated = cursor.rowcount > 0
     conn.commit()
     conn.close()
+    return updated
 
-def get_all_contacts():
-    conn = get_connection()
-    df = pd.read_sql_query("SELECT * FROM contacts ORDER BY name ASC", conn)
-    conn.close()
-    return df
-
-def update_contact(contact_id, name, phone, email, address, category, notes, is_favorite):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute('''
-        UPDATE contacts 
-        SET name=?, phone=?, email=?, address=?, category=?, notes=?, is_favorite=?
-        WHERE id=?
-    ''', (name, phone, email, address, category, notes, int(is_favorite), contact_id))
+def delete_db_contact(name):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM contacts WHERE name = ?", (name,))
+    deleted = cursor.rowcount > 0
     conn.commit()
     conn.close()
-
-def delete_contact(contact_id):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute("DELETE FROM contacts WHERE id=?", (contact_id,))
-    conn.commit()
-    conn.close()
-
-def toggle_favorite(contact_id, current_status):
-    conn = get_connection()
-    c = conn.cursor()
-    new_status = 0 if current_status == 1 else 1
-    c.execute("UPDATE contacts SET is_favorite=? WHERE id=?", (new_status, contact_id))
-    conn.commit()
-    conn.close()
-
-def clear_all_contacts():
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute("DELETE FROM contacts")
-    conn.commit()
-    conn.close()
+    return deleted
