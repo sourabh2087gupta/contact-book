@@ -4,7 +4,6 @@ html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Deep Cosmic Background with Subtle Grid */
 .stApp {
     background-color: #06060e;
     background-image: 
@@ -15,22 +14,21 @@ html, body, [class*="css"] {
     background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
 }
 
-/* Glowing Hero Banner */
 .hero-card {
     background: linear-gradient(135deg, rgba(30, 27, 75, 0.65) 0%, rgba(49, 16, 47, 0.55) 100%);
     border: 1px solid rgba(167, 139, 250, 0.25);
     backdrop-filter: blur(20px);
     border-radius: 24px;
-    padding: 32px 24px;
+    padding: 28px 24px;
     text-align: center;
-    margin-bottom: 26px;
+    margin-bottom: 24px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .hero-icon-wrap {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 14px auto;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 12px auto;
     border-radius: 18px;
     background: linear-gradient(135deg, #38bdf8, #818cf8, #ec4899);
     display: flex;
@@ -40,7 +38,7 @@ html, body, [class*="css"] {
 }
 
 .main-title {
-    font-size: 44px;
+    font-size: 42px;
     font-weight: 800;
     background: linear-gradient(90deg, #e0f2fe 0%, #a5b4fc 50%, #f9a8d4 100%);
     -webkit-background-clip: text;
@@ -57,29 +55,27 @@ html, body, [class*="css"] {
     margin: 0;
 }
 
-/* Stat Counter Boxes with Vector Icon Badges */
 .stat-box {
     background: rgba(15, 23, 42, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(12px);
     border-radius: 18px;
-    padding: 18px 20px;
+    padding: 16px 18px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 22px;
+    gap: 14px;
+    margin-bottom: 20px;
     transition: all 0.3s ease;
 }
 
 .stat-box:hover {
     transform: translateY(-3px);
     border-color: rgba(139, 92, 246, 0.45);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
 .stat-icon {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -88,19 +84,19 @@ html, body, [class*="css"] {
 }
 
 .icon-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
-.icon-pink { background: rgba(244, 114, 182, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3); }
-.icon-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
 .icon-amber { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+.icon-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+.icon-pink { background: rgba(244, 114, 182, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3); }
 
 .stat-num {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     color: #f8fafc;
     line-height: 1.1;
 }
 
 .stat-label {
-    font-size: 12px;
+    font-size: 11px;
     color: #94a3b8;
     font-weight: 600;
     text-transform: uppercase;
@@ -108,21 +104,19 @@ html, body, [class*="css"] {
     margin-top: 3px;
 }
 
-/* Pill Style Tabs */
 .stTabs [data-baseweb="tab-list"] {
     background: rgba(15, 23, 42, 0.7);
     padding: 6px;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    gap: 8px;
+    gap: 6px;
 }
 
 .stTabs [data-baseweb="tab"] {
     border-radius: 12px;
-    padding: 10px 18px;
+    padding: 10px 16px;
     font-weight: 600;
     color: #94a3b8;
-    transition: all 0.25s ease;
 }
 
 .stTabs [aria-selected="true"] {
@@ -131,17 +125,15 @@ html, body, [class*="css"] {
     border: 1px solid rgba(168, 85, 247, 0.45) !important;
 }
 
-/* Form Container Glassmorphism */
 [data-testid="stForm"] {
     background: rgba(15, 23, 42, 0.55) !important;
     border: 1px solid rgba(139, 92, 246, 0.25) !important;
     border-radius: 20px !important;
-    padding: 28px !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+    padding: 24px !important;
 }
 
-/* Input Fields */
 .stTextInput > div > div > input,
+.stTextArea > div > div > textarea,
 .stSelectbox > div > div > div {
     background-color: rgba(9, 13, 26, 0.85) !important;
     border: 1px solid rgba(148, 163, 184, 0.2) !important;
@@ -149,12 +141,6 @@ html, body, [class*="css"] {
     color: #f8fafc !important;
 }
 
-.stTextInput > div > div > input:focus {
-    border-color: #818cf8 !important;
-    box-shadow: 0 0 14px rgba(129, 140, 248, 0.35) !important;
-}
-
-/* Neon Gradient Buttons */
 .stButton > button,
 [data-testid="stFormSubmitButton"] > button,
 .stDownloadButton > button {
@@ -162,70 +148,73 @@ html, body, [class*="css"] {
     color: #ffffff !important;
     border: none !important;
     border-radius: 12px !important;
-    padding: 12px 24px !important;
     font-weight: 600 !important;
-    letter-spacing: 0.3px;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 6px 20px rgba(147, 51, 234, 0.35) !important;
+    transition: all 0.25s ease !important;
 }
 
 .stButton > button:hover,
 [data-testid="stFormSubmitButton"] > button:hover,
 .stDownloadButton > button:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 10px 28px rgba(219, 39, 119, 0.55) !important;
+    box-shadow: 0 8px 22px rgba(219, 39, 119, 0.45) !important;
 }
 
-/* Custom Contact Grid Cards */
+/* Contact Card */
 .contact-card {
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.75));
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.8));
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 18px;
     padding: 18px 20px;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     transition: all 0.3s ease;
+}
+
+.contact-card.vip-card {
+    border: 1px solid rgba(251, 191, 36, 0.45);
+    box-shadow: 0 0 22px rgba(251, 191, 36, 0.08);
+}
+
+.card-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.contact-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(129, 140, 248, 0.55);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.5);
+    gap: 12px;
 }
 
 .contact-left {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
 }
 
 .avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
     background: linear-gradient(135deg, #38bdf8, #6366f1, #ec4899);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 21px;
+    font-size: 20px;
     font-weight: 800;
     color: #ffffff;
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    flex-shrink: 0;
 }
 
 .contact-info h4 {
-    margin: 0 0 6px 0;
+    margin: 0 0 4px 0;
     font-size: 17px;
     color: #f8fafc;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .meta-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
+    gap: 12px;
     font-size: 13px;
     color: #94a3b8;
 }
@@ -236,16 +225,59 @@ html, body, [class*="css"] {
     gap: 5px;
 }
 
-/* Category Color Badges */
-.badge {
-    padding: 6px 14px;
-    border-radius: 20px;
+.note-pill {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.7);
+    border-left: 3px solid #818cf8;
+    font-size: 12.5px;
+    color: #cbd5e1;
+}
+
+.action-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.smart-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 8px;
     font-size: 12px;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+}
+
+.link-wa { background: rgba(16, 185, 129, 0.15); color: #34d399 !important; border: 1px solid rgba(16, 185, 129, 0.3); }
+.link-wa:hover { background: rgba(16, 185, 129, 0.28); }
+
+.link-mail { background: rgba(244, 114, 182, 0.15); color: #f472b6 !important; border: 1px solid rgba(244, 114, 182, 0.3); }
+.link-mail:hover { background: rgba(244, 114, 182, 0.28); }
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11.5px;
     font-weight: 700;
-    letter-spacing: 0.4px;
 }
 .badge-Family { background: rgba(239, 68, 68, 0.16); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
 .badge-Friends { background: rgba(16, 185, 129, 0.16); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
 .badge-College { background: rgba(59, 130, 246, 0.16); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.35); }
 .badge-Work { background: rgba(245, 158, 11, 0.16); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
 .badge-General { background: rgba(168, 85, 247, 0.16); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); }
+
+.radar-alert {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    color: #fde68a;
+    font-size: 14px;
+}
