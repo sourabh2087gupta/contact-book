@@ -1,5 +1,6 @@
 import re
 import csv
+import socket
 import io
 from difflib import SequenceMatcher
 import qrcode
@@ -107,3 +108,24 @@ def find_duplicates(contacts):
                     "reason": " & ".join(reasons)
                 })
     return alerts
+
+def get_local_ip():
+    """Gets your laptop's local Wi-Fi IP address for phone scanning."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
+def generate_url_qr(url):
+    """Generates a scannable QR code PNG for any URL."""
+    qr = qrcode.QRCode(version=1, box_size=8, border=2)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="#1e1b4b", back_color="#ffffff")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
