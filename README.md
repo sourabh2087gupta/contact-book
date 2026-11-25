@@ -1,12 +1,30 @@
 # ⚡ Smart Contact Hub
 
+
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://sourabh-contact.streamlit.app)
+
+
+
 A modern, full-featured **Personal CRM & Connection Manager** built with Python, Streamlit, and SQLite. Designed with a dark cosmic glassmorphism UI, crisp vector icons, and interactive analytics to go far beyond a standard CRUD contact book.
+
+
+
+🔗 **Live App:** [https://sourabh-contact.streamlit.app](https://sourabh-contact.streamlit.app)
+
+
 
 ---
 
+
+
 ## ✨ Key Features
 
+
+
 * **Instant QR Code vCard Generator:** Generate scannable vCard 3.0 QR codes directly from any contact card to save details to a mobile phone in seconds.
+
+* **Add via Phone (QR Sync):** Scan a dedicated QR code from your smartphone to open a mobile-friendly quick-add form that syncs new contacts straight to the dashboard.
 
 * **1-Click Smart Actions:** Launch instant WhatsApp chats (`wa.me`), open direct emails (`mailto:`), copy contact details to clipboard, and log "Last Contacted" timestamps with a single click.
 
@@ -18,8 +36,14 @@ A modern, full-featured **Personal CRM & Connection Manager** built with Python,
 
 * **Validation & Export:** Built-in Regex validation for 10-digit phone numbers and emails, category filtering (`Family`, `Friends`, `College`, `Work`, `General`), and 1-click CSV export.
 
+
+
 ---
+
+
+
 ## 🛠️ Tech Stack
+
 
 
 * **Language:** Python 3
@@ -30,20 +54,27 @@ A modern, full-featured **Personal CRM & Connection Manager** built with Python,
 
 * **Visualizations & Utilities:** Plotly, `qrcode[pil]`, `difflib`, `re`, `collections.Counter`
 
+* **Deployment:** Streamlit Community Cloud (Auto-synced with GitHub `main` branch)
+
+
+
 ---
 
+
+
 ## 📁 Project Structure
+
 
 
 ```text
 
 contact-book/
 
-├── app.py              # Main Streamlit dashboard, tabs, and Plotly analytics
+├── app.py              # Main Streamlit dashboard, tabs, phone sync mode & Plotly analytics
 
 ├── database.py         # SQLite connection, CRUD queries, and schema migrations
 
-├── utils.py            # Regex validation, vCard QR generator, fuzzy search & CSV export
+├── utils.py            # Regex validation, vCard/URL QR generators, fuzzy search & CSV export
 
 ├── styles.css          # Cosmic glassmorphism theme, VIP cards, and responsive styling
 
@@ -54,7 +85,16 @@ contact-book/
 └── README.md           # Project documentation
 
 ```
+
+
+
+---
+
+
+
 ## 🚀 Getting Started
+
+
 
 1. **Clone the repository:**
 
@@ -78,7 +118,7 @@ contact-book/
 
 
 
-3. **Run the application:**
+3. **Run the application locally:**
 
    ```bash
 
@@ -86,7 +126,14 @@ contact-book/
 
    ```
 
+
+
+---
+
+
+
 ## 👨‍💻 Author
+
 
 
 **Sourabh Gupta**  
