@@ -10,7 +10,8 @@ from database import (
 from utils import (
     is_valid_phone, is_valid_email, format_whatsapp_url,
     convert_to_csv, generate_vcard_qr,
-    fuzzy_search_contacts, find_duplicates
+    fuzzy_search_contacts, find_duplicates,
+    get_local_ip, generate_url_qr
 )
 
 st.set_page_config(page_title="Smart Contact Hub", page_icon=":material/hub:", layout="wide")
@@ -20,7 +21,45 @@ with open("styles.css") as f:
 
 init_db()
 
-# --- Inline Crisp SVG Icons ---
+CATEGORIES = ["Family", "Friends", "College", "Work", "General"]
+
+# ==========================================
+# MOBILE QUICK-ADD MODE (When scanned by phone)
+# ==========================================
+if st.query_params.get("mode") == "mobile_add":
+    st.markdown("""
+<div class="hero-card">
+<div class="main-title" style="font-size: 28px;">Quick Add Contact</div>
+<p class="sub-text">Submit details here to sync directly to Smart Contact Hub</p>
+</div>
+""", unsafe_allow_html=True)
+
+    with st.form("mobile_add_form", clear_on_submit=True):
+        m_name = st.text_input("Full Name", placeholder="e.g. Rohan Sharma")
+        m_phone = st.text_input("Phone Number (10 digits)", placeholder="9876543210")
+        m_email = st.text_input("Email Address (Optional)", placeholder="rohan@example.com")
+        m_cat = st.selectbox("Category", CATEGORIES)
+        m_notes = st.text_area("Notes (Optional)", placeholder="Met at college / event...", height=70)
+        m_submit = st.form_submit_button("Send to System", icon=":material/send:", use_container_width=True)
+
+        if m_submit:
+            if not m_name.strip() or not m_phone.strip():
+                st.warning("Name and Phone Number are required.")
+            elif not is_valid_phone(m_phone):
+                st.error("Invalid Phone Number! Enter a valid 10-digit number.")
+            elif not is_valid_email(m_email):
+                st.error("Invalid Email format!")
+            else:
+                if add_db_contact(m_name.strip(), m_phone.strip(), m_email.strip(), m_cat, 0, m_notes.strip()):
+                    st.success(f"'{m_name}' synced to your system!")
+                    st.balloons()
+                else:
+                    st.error(f"Contact '{m_name}' already exists!")
+    st.stop()
+
+# ==========================================
+# DESKTOP DASHBOARD MODE
+# ==========================================
 SVG_HERO = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
 SVG_USERS = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
 SVG_STAR = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
@@ -32,14 +71,13 @@ SVG_MAIL = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="
 
 # --- Hero Header ---
 st.markdown(f"""
-    <div class="hero-card">
-        <div class="hero-icon-wrap">{SVG_HERO}</div>
-        <div class="main-title">Smart Contact Hub</div>
-        <p class="sub-text">Personal CRM with QR vCards, Fuzzy Search &amp; Network Analytics</p>
-    </div>
+<div class="hero-card">
+<div class="hero-icon-wrap">{SVG_HERO}</div>
+<div class="main-title">Smart Contact Hub</div>
+<p class="sub-text">Personal CRM with QR vCards, Phone Sync &amp; Network Analytics</p>
+</div>
 """, unsafe_allow_html=True)
 
-CATEGORIES = ["Family", "Friends", "College", "Work", "General"]
 all_contacts = get_all_contacts("All")
 duplicates = find_duplicates(all_contacts)
 
@@ -85,29 +123,31 @@ def render_contact_card(contact, key_prefix="dir"):
     note_html = f'<div class="note-pill">{notes}</div>' if notes else ""
     last_html = f'<span class="meta-item">Last contacted: {last_c}</span>' if last_c else ""
 
-    st.markdown(f"""
-        <div class="contact-card {vip_class}">
-            <div class="card-top">
-                <div class="contact-left">
-                    <div class="avatar">{initial}</div>
-                    <div class="contact-info">
-                        <h4>{name} {vip_star}</h4>
-                        <div class="meta-row">
-                            <span class="meta-item">{SVG_PHONE} {phone}</span>
-                            <span class="meta-item">{SVG_MAIL} {email_display}</span>
-                            {last_html}
-                        </div>
-                    </div>
-                </div>
-                <span class="badge badge-{cat}">{cat}</span>
-            </div>
-            {note_html}
-            <div class="action-links">
-                <a class="smart-link link-wa" href="{wa_url}" target="_blank">WhatsApp</a>
-                {mail_html}
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    # Zero-indentation HTML prevents Markdown from rendering it as a code block
+    card_html = (
+        f'<div class="contact-card {vip_class}">'
+        f'<div class="card-top">'
+        f'<div class="contact-left">'
+        f'<div class="avatar">{initial}</div>'
+        f'<div class="contact-info">'
+        f'<h4>{name} {vip_star}</h4>'
+        f'<div class="meta-row">'
+        f'<span class="meta-item">{SVG_PHONE} {phone}</span>'
+        f'<span class="meta-item">{SVG_MAIL} {email_display}</span>'
+        f'{last_html}'
+        f'</div>'
+        f'</div>'
+        f'</div>'
+        f'<span class="badge badge-{cat}">{cat}</span>'
+        f'</div>'
+        f'{note_html}'
+        f'<div class="action-links">'
+        f'<a class="smart-link link-wa" href="{wa_url}" target="_blank">WhatsApp</a>'
+        f'{mail_html}'
+        f'</div>'
+        f'</div>'
+    )
+    st.markdown(card_html, unsafe_allow_html=True)
 
     # Interactive Smart Action Row
     a1, a2, a3, a4 = st.columns(4)
@@ -129,35 +169,49 @@ def render_contact_card(contact, key_prefix="dir"):
             st.rerun()
     st.write("")
 
-# TAB 1: ADD CONTACT
+# TAB 1: ADD CONTACT (2 Columns: Manual Form + Phone QR Sync)
 with tab1:
-    st.markdown("#### :material/add_circle: Create New Connection")
-    with st.form("add_form", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            name = st.text_input("Full Name", placeholder="e.g. Rohan Sharma")
-            email = st.text_input("Email Address", placeholder="rohan@example.com")
-        with c2:
-            phone = st.text_input("Phone Number (10 digits)", placeholder="9876543210")
-            category = st.selectbox("Category Tag", CATEGORIES)
+    left_col, right_col = st.columns([2, 1], gap="large")
 
-        notes = st.text_area("Follow-up Notes (Optional)", placeholder="Met at hackathon, follow up about AI project...", height=80)
-        is_fav = st.checkbox("Mark as VIP / Favorite (Pinned to top)")
+    with left_col:
+        st.markdown("#### :material/add_circle: Create New Connection")
+        with st.form("add_form", clear_on_submit=True):
+            c1, c2 = st.columns(2)
+            with c1:
+                name = st.text_input("Full Name", placeholder="e.g. Rohan Sharma")
+                email = st.text_input("Email Address", placeholder="rohan@example.com")
+            with c2:
+                phone = st.text_input("Phone Number (10 digits)", placeholder="9876543210")
+                category = st.selectbox("Category Tag", CATEGORIES)
 
-        submit = st.form_submit_button("Save to Directory", icon=":material/rocket_launch:", use_container_width=True)
-        if submit:
-            if not name.strip() or not phone.strip():
-                st.warning("Name and Phone Number are required.")
-            elif not is_valid_phone(phone):
-                st.error("Invalid Phone Number! Enter a valid 10-digit number.")
-            elif not is_valid_email(email):
-                st.error("Invalid Email format!")
-            else:
-                if add_db_contact(name.strip(), phone.strip(), email.strip(), category, is_fav, notes.strip()):
-                    st.success(f"'{name}' added under {category}!")
-                    st.rerun()
+            notes = st.text_area("Follow-up Notes (Optional)", placeholder="Met at hackathon, follow up about AI project...", height=80)
+            is_fav = st.checkbox("Mark as VIP / Favorite (Pinned to top)")
+
+            submit = st.form_submit_button("Save to Directory", icon=":material/rocket_launch:", use_container_width=True)
+            if submit:
+                if not name.strip() or not phone.strip():
+                    st.warning("Name and Phone Number are required.")
+                elif not is_valid_phone(phone):
+                    st.error("Invalid Phone Number! Enter a valid 10-digit number.")
+                elif not is_valid_email(email):
+                    st.error("Invalid Email format!")
                 else:
-                    st.error(f"Contact '{name}' already exists!")
+                    if add_db_contact(name.strip(), phone.strip(), email.strip(), category, is_fav, notes.strip()):
+                        st.success(f"'{name}' added under {category}!")
+                        st.rerun()
+                    else:
+                        st.error(f"Contact '{name}' already exists!")
+
+    with right_col:
+        st.markdown("#### :material/qr_code_scanner: Add via Phone")
+        local_ip = get_local_ip()
+        mobile_url = f"http://{local_ip}:8501/?mode=mobile_add"
+        qr_img = generate_url_qr(mobile_url)
+
+        st.image(qr_img, caption="Scan with your phone camera (same Wi-Fi)", use_container_width=True)
+        st.code(mobile_url, language="text")
+        if st.button("Refresh Synced Contacts", icon=":material/refresh:", use_container_width=True):
+            st.rerun()
 
 # TAB 2: DIRECTORY & EXPORT
 with tab2:
